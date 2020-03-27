@@ -8,7 +8,7 @@ import requests
 import json
 import glob
 
-api_key = '007c7340635b7b6ce695d57bc83f0510'
+# api_key = api_key할당
 
 # today_date
 today = datetime.today().strftime('%Y-%m-%d')
