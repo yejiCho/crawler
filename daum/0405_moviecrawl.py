@@ -45,13 +45,15 @@ def movie_content(movie_id):
         else:
             country=""
         unrelease_date =soup.select('div > dl.list_movie.list_main > dd.txt_main') # 개봉일
+#         print(unrelease_date)
         if len(unrelease_date) == 1:
-            release_date = ''
+            join_release_date = ''
         elif len(unrelease_date) > 1:
             nrelease_date = unrelease_date[-1].text.strip()
-            release_date = re.findall('\d+', nrelease_date)[0]
+            rerelease_date = re.findall('\d+', nrelease_date)
+            join_release_date = ".".join(rerelease_date)
         else:
-            release_date = ""
+            join_release_date = ""
         unrating = soup.select('div > dl.list_movie.list_main > dd')
         if len(unrating) == 6:      # 영화정보 : 상영등급
             rating = unrating[3].text.strip()
@@ -66,16 +68,19 @@ def movie_content(movie_id):
         actor = re.sub(r'\([^)]*\)',"",actors).strip()
     elif len(directors) == 1:
         actor=""
+    else:
+        actor=""
     unreview = soup.select('#mainGradeDiv')
     for review in unreview:
         review_counts=soup.select('span.num_review')
-        print(review_counts)
+#         print(review_counts)
         if review_counts:
             review_count = review_counts[0].text.strip()
             rereview_count = re.findall('\d+', review_count)[0]
-
+        else:
+            rereview_count=""
         
-    return [movie_id,title,title_eng,grade,genres,country,release_date,rating,director,actor,restory,rereview_count]
+    return [movie_id+1,title,title_eng,grade,genres,country,join_release_date,rating,director,actor,restory,rereview_count]
 
 def df_movie(movie_last,movie_range):
     get_movie_list = []
@@ -102,9 +107,9 @@ def df_movie(movie_last,movie_range):
                       )
     return all_df
 
-movie_len = 10000  # movie_id의 최대개수 지정
-file_list = glob.glob('./crawl_daum/*') # 저장할 위치 지정
-pre_count = int(file_list[-1][-10:-4]) if file_list else 0
+movie_len = 20000  # movie_id 마지막값 지정
+file_list = glob.glob('./crawl_daum/*')  # 파일저장위치
+pre_count = int(file_list[-1][-10:-4]) if file_list else 10000
 
 if pre_count < movie_len:
     count_list = list(range(pre_count, movie_len,100)) + [movie_len]
